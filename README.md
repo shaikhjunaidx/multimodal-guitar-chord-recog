@@ -8,3 +8,5 @@ Hough Transform is sensitive to nois and change in lighting conditions. Move you
 My algorithm assumes that the fretboard is well lit and that the bridge (white plate at the beginning of the guitar) is always in the frame at the beginning of the frame.
 
 Currently my program does not detect hand landmarks as they tend to slow it down. I am working on optimizing it now.
+
+Demo: https://youtu.be/rA_E_A2B9o0
