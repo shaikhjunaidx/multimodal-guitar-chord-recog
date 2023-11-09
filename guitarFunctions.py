@@ -59,7 +59,8 @@ def isolateNeck(image):
 
     # Expected fretboard dimensions
     expectedFretboardWidth, expectedFretboardHeight = 600, 100
-    minFretboardWidth, minFretboardHeight = 500, 70
+    minFretboardWidth, minFretboardHeight = 500, 90
+    maxFretboardWidth, maxFretboardHeight = 650, 120
     fretboardThreshold = 40  
 
     # if image is empty, return
@@ -190,36 +191,34 @@ def isolateNeck(image):
     
     # Check if the detected size is within the expected range
     if (abs(detectedFretboardWidth - expectedFretboardWidth) <= fretboardThreshold 
-    and abs(detectedFretboardHeight - expectedFretboardHeight) <= fretboardThreshold):
+        and abs(detectedFretboardHeight - expectedFretboardHeight) <= fretboardThreshold):
         
-        print("----------")
-        print("detectedFretboardWidth", detectedFretboardWidth)
-        print("expectedFretboardHeight", detectedFretboardHeight)
-        print("----------")
+        # print("----------")
+        # print("detectedFretboardWidth", detectedFretboardWidth)
+        # print("expectedFretboardHeight", detectedFretboardHeight)
+        # print("----------")
 
         # Coordinates are close to the expected size, proceed with cropping
-        isolatedFretboard = cropThisImageArr[firstH - 15:lastH + 15, firstV:lastV + 15]
+        isolatedFretboard = cropThisImageArr[firstH - 15:lastH + 15, firstV :lastV + 15] 
 
         # return the cropped Image object only if it is a valid fretboard crop and the bridge (white part at start of the board)
         # is present in this crop
-        if bridgePresent(isolatedFretboard) and len(isolatedFretboard) > minFretboardWidth and len(isolatedFretboard[0]) > minFretboardHeight:
+        if (bridgePresent(isolatedFretboard) 
+            and maxFretboardHeight > len(isolatedFretboard) > minFretboardHeight 
+            and maxFretboardWidth > len(isolatedFretboard[0]) > minFretboardWidth):
             return Image(image=isolatedFretboard)
         
-    else:
-        # Detected size is not close to expected, return None or handle accordingly
-        return None
-
-    return Image(img=cropThisImageArr[firstH - 15 : lastH + 15,
-                                      firstV - 15 : lastV + 15])
+    # Detected size is not close to expected, return None
+    return None
 
 
-def bridgePresent(isolatedFretboard):
+def bridgePresent(board):
 
     # Convert the image to grayscale
-    gray = cv2.cvtColor(isolatedFretboard, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 
     # Define a threshold to determine what is considered as white
-    whitePixels = 3500 
+    whitePixels = 1300 
 
     # Extract the rightmost region of interest (ROI) with a small width
     rightmostROI = gray[:, -20:]

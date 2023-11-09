@@ -25,7 +25,8 @@ class Image:
                 raise ValueError()
         
         except Exception as e:
-            print(str(e))
+            # print(str(e))
+            pass
         
 
     def __str__(self):
