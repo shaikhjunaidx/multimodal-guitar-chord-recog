@@ -226,8 +226,8 @@ def bridgePresent(board):
     binary = binarize(rightmostROI, 127)
 
     # Count the number of white pixels in the rightmost ROI
-    white_pixel_count = cv2.countNonZero(binary)
+    whitePixelCount = cv2.countNonZero(binary)
 
     # Check if there are enough white pixels to consider the white rectangle (bridge) as present
-    return white_pixel_count > whitePixels
+    return whitePixelCount > whitePixels
 

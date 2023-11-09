@@ -7,12 +7,12 @@ liveFeed = True
 cameraNumber = 0
 
 # Importing required modules from mediapipe
-mp_drawing = mp.solutions.drawing_utils
-mp_hands = mp.solutions.hands
+mpDrawing = mp.solutions.drawing_utils
+mpHands = mp.solutions.hands
 
 # Specify the drawing specifications for the landmarks and connections
-hand_landmark_drawing_spec = mp_drawing.DrawingSpec(thickness=2, circle_radius=6)
-hand_connection_drawing_spec = mp_drawing.DrawingSpec(thickness=4, circle_radius=10)
+handLandmarkDrawingSpec = mpDrawing.DrawingSpec(thickness=2, circle_radius=6)
+handConnectionDrawingSpec = mpDrawing.DrawingSpec(thickness=4, circle_radius=10)
 
 def processFrame(frame):
 
@@ -77,8 +77,8 @@ def main():
 
     else:
         # Specify the path to the image you want to use
-        image_path = "capstone/17.jpg"
-        frame = cv2.imread(image_path)
+        imagePath = "capstone/17.jpg"
+        frame = cv2.imread(imagePath)
 
         if frame is None:
             print("Error: Failed to load the image from the specified path.")
