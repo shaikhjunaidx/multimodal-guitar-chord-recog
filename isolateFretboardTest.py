@@ -2,38 +2,24 @@ import cv2
 import mediapipe as mp
 from image import Image
 from guitarFunctions import *
+import traceback
 
 liveFeed = True
 cameraNumber = 0
+printErrors = False
 
 # Importing required modules from mediapipe
 mpDrawing = mp.solutions.drawing_utils
 mpHands = mp.solutions.hands
 
 # Specify the drawing specifications for the landmarks and connections
-handLandmarkDrawingSpec = mpDrawing.DrawingSpec(thickness=2, circle_radius=6)
-handConnectionDrawingSpec = mpDrawing.DrawingSpec(thickness=4, circle_radius=10)
+handLandmarkDrawingSpec = mpDrawing.DrawingSpec(color=(0, 0, 255), thickness=4, circle_radius=4)
+handConnectionDrawingSpec = mpDrawing.DrawingSpec(color=(0, 255, 0), thickness=6, circle_radius=8)
 
 def processFrame(frame):
 
-    # Need to work on this, how can I make it efficient and fast?
-
-    # Process the image using the hands object
-    # Convert the image to RGB color space
-    # hands = mp_hands.Hands(min_detection_confidence=0.1, min_tracking_confidence=0.1)
-    # results_hand = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-
-    # Draw the hand landmarks and connections if any are detected
-
-    # if results_hand.multi_hand_landmarks:
-    #     for hand_landmarks in results_hand.multi_hand_landmarks:
-    #         mp_drawing.draw_landmarks(
-    #             image=frame,
-    #             landmark_list=hand_landmarks,
-    #             connections=mp_hands.HAND_CONNECTIONS,
-    #             landmark_drawing_spec=hand_landmark_drawing_spec,
-    #             connection_drawing_spec=hand_connection_drawing_spec)
+    # Display the original and processed frames
+    cv2.imshow('Original', frame)
 
     # Create an Image object
     chordImage = Image(image=frame)
@@ -41,15 +27,31 @@ def processFrame(frame):
     # Rotate and crop the frame
     rotatedImage = rotateNeck(chordImage)
     if rotatedImage:
-        isolatedNeck = isolateNeck(rotatedImage)
+        croppedCoordinates = isolateNeck(rotatedImage)
 
+        if croppedCoordinates:
+            firstH, lastH, firstV, lastV = croppedCoordinates
 
-    # Display the original and processed frames
-    cv2.imshow('Original', frame)
+            # Process the image using the hands object
+            # Convert the image to RGB color space
+            hands = mpHands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+            results = hands.process(cv2.cvtColor(rotatedImage.image, cv2.COLOR_BGR2RGB))
 
-    if isolatedNeck is not None:
-        cv2.imshow('Cropped neck image', isolatedNeck.image)
+            if results.multi_hand_landmarks:
+                for hand_landmarks in results.multi_hand_landmarks:
+                    mpDrawing.draw_landmarks(
+                        image=rotatedImage.image,
+                        landmark_list=hand_landmarks,
+                        connections=mpHands.HAND_CONNECTIONS,
+                        landmark_drawing_spec=handLandmarkDrawingSpec,
+                        connection_drawing_spec=handConnectionDrawingSpec)
+                    
+            isolatedFretboard = rotatedImage.image[firstH - 15:lastH + 15, firstV - 15 :lastV + 15]
 
+            isolatedNeck = Image(image=isolatedFretboard)
+            if isolatedNeck:
+                cv2.imshow('Cropped neck image', isolatedNeck.image)
+            
 
 def main():
     # Create a hands object from mediapipe
@@ -65,7 +67,8 @@ def main():
             try:
                 processFrame(frame)
             except Exception as e:
-                print(str(e))
+               if printErrors:
+                   traceback.print_exc()
             
             # Exit the loop if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -87,7 +90,8 @@ def main():
         try:
             processFrame(frame)
         except Exception as e:
-            print(str(e))
+            if printErrors:
+                traceback.print_exc()
 
 if __name__ == '__main__':
     main()
