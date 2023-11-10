@@ -57,12 +57,6 @@ def rotateNeck(image):
 
 def isolateNeck(image):
 
-    # Expected fretboard dimensions
-    expectedFretboardWidth, expectedFretboardHeight = 600, 100
-    minFretboardWidth, minFretboardHeight = 500, 90
-    maxFretboardWidth, maxFretboardHeight = 650, 120
-    fretboardThreshold = 40  
-
     # if image is empty, return
     if not image:
         return
@@ -186,6 +180,12 @@ def isolateNeck(image):
     if lastH == inf:
         lastH = len(cropThisImageArr) - 1
 
+    # Expected fretboard dimensions
+    expectedFretboardWidth, expectedFretboardHeight = 600, 100
+    minFretboardWidth, minFretboardHeight = 500, 90
+    maxFretboardWidth, maxFretboardHeight = 650, 120
+    fretboardThreshold = 50
+
     # Calculate the width and height of the detected fretboard
     detectedFretboardWidth, detectedFretboardHeight = lastV - firstV, lastH - firstH
     
@@ -206,7 +206,8 @@ def isolateNeck(image):
         if (bridgePresent(isolatedFretboard) 
             and maxFretboardHeight > len(isolatedFretboard) > minFretboardHeight 
             and maxFretboardWidth > len(isolatedFretboard[0]) > minFretboardWidth):
-            return Image(image=isolatedFretboard)
+            # return Image(image=isolatedFretboard), firstH, lastH, firstV, lastV
+            return firstH, lastH, firstV, lastV
         
     # Detected size is not close to expected, return None
     return None
