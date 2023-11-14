@@ -182,7 +182,7 @@ def isolateNeck(image):
 
     # Expected fretboard dimensions
     expectedFretboardWidth, expectedFretboardHeight = 600, 100
-    minFretboardWidth, minFretboardHeight = 500, 90
+    minFretboardWidth, minFretboardHeight = 550, 100
     maxFretboardWidth, maxFretboardHeight = 650, 120
     fretboardThreshold = 50
 
@@ -204,9 +204,9 @@ def isolateNeck(image):
         # return the cropped Image object only if it is a valid fretboard crop and the bridge (white part at start of the board)
         # is present in this crop
         if (bridgePresent(isolatedFretboard) 
-            and maxFretboardHeight > len(isolatedFretboard) > minFretboardHeight 
-            and maxFretboardWidth > len(isolatedFretboard[0]) > minFretboardWidth):
-            # return Image(image=isolatedFretboard), firstH, lastH, firstV, lastV
+            and( maxFretboardHeight > len(isolatedFretboard) > minFretboardHeight) 
+            and (maxFretboardWidth > len(isolatedFretboard[0]) > minFretboardWidth)):
+            print(isolatedFretboard.shape)
             return firstH, lastH, firstV, lastV
         
     # Detected size is not close to expected, return None
